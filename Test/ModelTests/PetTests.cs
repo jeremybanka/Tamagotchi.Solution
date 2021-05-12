@@ -48,23 +48,23 @@ namespace Tamagotchi.Tests
     }
 
     [TestMethod]
-    public void Feed_AddsFiveTo_FoodOfPetInstance()
+    public void IncrementStatFood5_AddsFiveTo_FoodOfPetInstance()
     {
       Pet myPet = new("doug", "Dog");
       myPet.Food = 50;
 
-      myPet.Feed();
+      myPet.Food = myPet.IncrementStat(myPet.Food, 5);
 
       Assert.AreEqual(55, myPet.Food);
     }
 
     [TestMethod]
-    public void Feed_AddsFiveToPetAndDoesNotExceed100_FoodOfPetInstance()
+    public void IncrementStatSleep10_AddsTenToRest_AndDoesNotExceed100()
     {
       Pet myPet = new("doug", "Dog");
-      myPet.Food = 98;
+      myPet.Rest = 98;
 
-      myPet.Feed();
+      myPet.Rest = myPet.IncrementStat(myPet.Rest, 10);
 
       Assert.AreEqual(100, myPet.Food);
     }
