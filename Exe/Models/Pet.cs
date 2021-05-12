@@ -4,6 +4,12 @@ namespace Tamagotchi.Models
 {
   public class Pet
   {
+    // public Dictionary<string, int> Stats = new()
+    // {
+    //   { "Food", 100 },
+    //   { "Attention", 100 },
+    //   { "Rest", 100 }
+    // };
     public string Name { get; set; }
     public string Type { get; set; }
     public int Food { get; set; }
@@ -19,6 +25,7 @@ namespace Tamagotchi.Models
       Food = 100;
       Attention = 100;
       Rest = 100;
+
       _instances.Add(this);
       Id = _instances.Count;
     }
@@ -46,28 +53,34 @@ namespace Tamagotchi.Models
       }
     }
 
-    public void Feed()
+    public int IncrementStat(int aStat, int howMuch)
     {
-      if (Food < 96)
+      int newStat = aStat;
+      if (newStat <= 100 - howMuch)
       {
-        Food += 5;
+        newStat += howMuch;
       }
       else
       {
-        Food = 100;
+        newStat = 100;
       }
+      return newStat;
     }
+
+    public void Feed()
+    {
+      Food = IncrementStat(Food, 5);
+    }
+
+    public void PlayWith()
+    {
+      Attention = IncrementStat(Attention, 10);
+    }
+
+    public void TuckIn()
+    {
+      Rest = IncrementStat(Rest, 20);
+    }
+
   }
 }
-
-// new Pet("George")
-
-// class Pet {
-//   constructor(
-//     name = "DefaultName", 
-//     desc = "Add a description"
-//     ) {
-//     this.name = name
-//     this.desc = desc
-//   }
-// }

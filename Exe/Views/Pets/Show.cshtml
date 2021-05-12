@@ -7,5 +7,19 @@
   <li>ATTENTION: @Model.Attention</li>
 </ul>
 
+<form action="/pets/@Model.Id/play-with" method="post">
+  <button type="submit">Play With</button>
+</form>
+
+<form action="/pets/@Model.Id/feed" method="post">
+  <button type="submit">Feed</button>
+</form>
+
+<form action="/pets/@Model.Id/tuck-in" method="post">
+  <button type="submit">Tuck In</button>
+</form>
+
 <a href="/pets/new">Add another pet</a>
 <a href="/pets">View all pets</a>
+
+<link href="~/styles/core.css" rel="stylesheet" type="text/css" />

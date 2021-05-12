@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Tamagotchi.Models;
 using System.Collections.Generic;
+using System;
 
 namespace Tamagotchi.Controllers
 {
@@ -41,8 +42,40 @@ namespace Tamagotchi.Controllers
     public ActionResult Show(int id)
     {
       Pet.WasteAway();
+      try
+      {
+        Pet foundPet = Pet.Find(id);
+        return View(foundPet);
+      }
+      catch (Exception)
+      {
+        return RedirectToAction("Index");
+      }
+    }
+
+    [HttpPost("/pets/{id}/play-with")]
+    public ActionResult PlayWith(int id)
+    {
       Pet foundPet = Pet.Find(id);
-      return View(foundPet);
+      foundPet.PlayWith();
+      return RedirectToAction("Index");
+    }
+
+    [HttpPost("/pets/{id}/feed")]
+    public ActionResult Feed(int id)
+    {
+      Pet foundPet = Pet.Find(id);
+      foundPet.Feed();
+      return RedirectToAction("Index");
+    }
+
+
+    [HttpPost("/pets/{id}/tuck-in")]
+    public ActionResult TuckIn(int id)
+    {
+      Pet foundPet = Pet.Find(id);
+      foundPet.TuckIn();
+      return RedirectToAction("Index");
     }
   }
 }
