@@ -30,6 +30,33 @@ namespace Tamagotchi.Models
     {
       _instances.Clear();
     }
+
+    public static Pet Find(int searchId)
+    {
+      return _instances[searchId - 1];
+    }
+
+    public static void WasteAway()
+    {
+      foreach (Pet pet in _instances)
+      {
+        pet.Food--;
+        pet.Attention--;
+        pet.Rest--;
+      }
+    }
+
+    public void Feed()
+    {
+      if (Food < 96)
+      {
+        Food += 5;
+      }
+      else
+      {
+        Food = 100;
+      }
+    }
   }
 }
 

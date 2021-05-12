@@ -30,7 +30,43 @@ namespace Tamagotchi.Tests
       List<Pet> result = Pet.GetAll();
 
       CollectionAssert.AreEqual(myList, result);
+    }
 
+    [TestMethod]
+    public void WasteAway_ReducesAllStatsOf_AllPets()
+    {
+      Pet myDogPet = new("Buddy", "Dog");
+      int foodStat = 99;
+      int attentionStat = 99;
+      int restStat = 99;
+
+      Pet.WasteAway();
+
+      Assert.AreEqual(foodStat, myDogPet.Food);
+      Assert.AreEqual(attentionStat, myDogPet.Attention);
+      Assert.AreEqual(restStat, myDogPet.Rest);
+    }
+
+    [TestMethod]
+    public void Feed_AddsFiveTo_FoodOfPetInstance()
+    {
+      Pet myPet = new("doug", "Dog");
+      myPet.Food = 50;
+
+      myPet.Feed();
+
+      Assert.AreEqual(55, myPet.Food);
+    }
+
+    [TestMethod]
+    public void Feed_AddsFiveToPetAndDoesNotExceed100_FoodOfPetInstance()
+    {
+      Pet myPet = new("doug", "Dog");
+      myPet.Food = 98;
+
+      myPet.Feed();
+
+      Assert.AreEqual(100, myPet.Food);
     }
   }
 }
