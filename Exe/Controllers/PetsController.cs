@@ -25,7 +25,5 @@ namespace Tamagotchi.Controllers
       Pet myPet = new Pet(name, type);
       return RedirectToAction("Index");
     }
-
-
   }
 }
