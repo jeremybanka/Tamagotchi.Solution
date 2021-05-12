@@ -10,6 +10,7 @@ namespace Tamagotchi
       var host = new WebHostBuilder()
         .UseKestrel()
         .UseContentRoot(Directory.GetCurrentDirectory())
+        .UseWebRoot("Public")
         .UseIISIntegration()
         .UseStartup<Startup>()
         .Build();
