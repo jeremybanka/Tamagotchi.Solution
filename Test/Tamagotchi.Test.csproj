@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Exe\Tamagotchi.csproj" />  
+    <ProjectReference Include="..\WebApp\Tamagotchi.csproj" />  
   </ItemGroup>
 
 </Project>
