@@ -1,5 +1,6 @@
 using MySql.Data.MySqlClient;
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 
 namespace Tamagotchi.Models
@@ -11,7 +12,7 @@ namespace Tamagotchi.Models
     public int Food { get; set; }
     public int Attn { get; set; }
     public int Rest { get; set; }
-    public string Id { get; }
+    public string Guid { get; }
     public Pet(string name, string type)
     {
       Name = name;
@@ -19,17 +20,41 @@ namespace Tamagotchi.Models
       Food = 100;
       Attn = 100;
       Rest = 100;
-      Id = Guid.NewGuid().ToString();
+      Guid = System.Guid.NewGuid().ToString();
     }
 
-    public Pet(string name, string type, int food, int attn, int rest, string petId)
+    public Pet(string name, string type, int food, int attn, int rest, string guid)
     {
       Name = name;
       Type = type;
       Food = food;
       Attn = attn;
       Rest = rest;
-      Id = petId;
+      Guid = guid;
+    }
+
+    // Utilizes a foreach to iterate over object properties
+    public override bool Equals(object otherPet)
+    {
+      Type petType = typeof(Pet);
+      if (!(otherPet is Pet))
+      {
+        return false;
+      }
+      else
+      {
+        Pet other = (Pet)otherPet;
+        foreach (PropertyInfo pInfo in petType.GetProperties())
+        {
+          if (pInfo.CanRead)
+          {
+            object thisValue = pInfo.GetValue(this, null);
+            object otherValue = pInfo.GetValue(other, null);
+            if (!object.Equals(thisValue, otherValue)) return false;
+          }
+        }
+        return true;
+      }
     }
 
     public static List<Pet> GetAll() // DONT: myPet.GetAll() DO: Pet.GetAll()
@@ -42,13 +67,13 @@ namespace Tamagotchi.Models
       MySqlDataReader rdr = cmd.ExecuteReader();
       while (rdr.Read())
       {
-        string id = rdr.GetString(0);
+        string guid = rdr.GetString(0);
         string name = rdr.GetString(1);
         string type = rdr.GetString(2);
         int food = rdr.GetInt32(3);
         int attn = rdr.GetInt32(4);
         int rest = rdr.GetInt32(5);
-        Pet myPet = new(name, type, food, attn, rest, id);
+        Pet myPet = new(name, type, food, attn, rest, guid);
         allPets.Add(myPet);
       }
       conn.Close();
@@ -62,6 +87,30 @@ namespace Tamagotchi.Models
       MySqlCommand cmd = conn.CreateCommand();
       cmd.CommandText = @"DELETE FROM pets;";
       cmd.ExecuteNonQuery();
+      conn.Close();
+      if (conn != null) conn.Dispose();
+    }
+
+    public void Save()
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      MySqlCommand cmd = conn.CreateCommand();
+
+
+      cmd.CommandText = @"INSERT INTO pets (name, type, food, attn, rest, guid) VALUES (@Name, @Type, @Food, @Attn, @Rest, @Guid);";
+      foreach (PropertyInfo pInfo in typeof(Pet).GetProperties())
+      {
+        if (pInfo.CanRead)
+        {
+          MySqlParameter param = new();
+          param.ParameterName = $"@{pInfo.Name}";
+          param.Value = pInfo.GetValue(this, null);
+          cmd.Parameters.Add(param);
+        }
+      }
+      cmd.ExecuteNonQuery();
+
       conn.Close();
       if (conn != null) conn.Dispose();
     }
