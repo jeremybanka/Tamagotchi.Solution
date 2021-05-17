@@ -107,12 +107,24 @@ namespace Tamagotchi.Tests
       Pet p = new("Michael", "cat");
 
       //Act
-      p.Save();
       List<Pet> result = Pet.GetAll();
       List<Pet> testList = new() { p };
 
       //Assert
       CollectionAssert.AreEqual(testList, result);
+    }
+
+    [TestMethod]
+    public void Find_ReturnsCorrectPetFromDatabase_Pet()
+    {
+      //Arrange
+      Pet cat1 = new("Fuji", "cat");
+      Pet cat2 = new("Tippy", "cat");
+
+      //Act
+      Pet found = Pet.Find(cat2.Guid);
+      //Assert
+      Assert.AreEqual(found, cat2);
     }
   }
 }

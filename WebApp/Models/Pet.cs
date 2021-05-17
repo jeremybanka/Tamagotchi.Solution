@@ -21,6 +21,7 @@ namespace Tamagotchi.Models
       Attn = 100;
       Rest = 100;
       Guid = System.Guid.NewGuid().ToString();
+      Save();
     }
 
     public Pet(string name, string type, int food, int attn, int rest, string guid)
@@ -67,13 +68,7 @@ namespace Tamagotchi.Models
       MySqlDataReader rdr = cmd.ExecuteReader();
       while (rdr.Read())
       {
-        string guid = rdr.GetString(0);
-        string name = rdr.GetString(1);
-        string type = rdr.GetString(2);
-        int food = rdr.GetInt32(3);
-        int attn = rdr.GetInt32(4);
-        int rest = rdr.GetInt32(5);
-        Pet myPet = new(name, type, food, attn, rest, guid);
+        Pet myPet = Load(rdr);
         allPets.Add(myPet);
       }
       conn.Close();
@@ -91,12 +86,22 @@ namespace Tamagotchi.Models
       if (conn != null) conn.Dispose();
     }
 
+    public static Pet Load(MySqlDataReader reader)
+    {
+      string guid = reader.GetString(0);
+      string name = reader.GetString(1);
+      string type = reader.GetString(2);
+      int food = reader.GetInt32(3);
+      int attn = reader.GetInt32(4);
+      int rest = reader.GetInt32(5);
+      return new Pet(name, type, food, attn, rest, guid);
+    }
+
     public void Save()
     {
       MySqlConnection conn = DB.Connection();
       conn.Open();
       MySqlCommand cmd = conn.CreateCommand();
-
 
       cmd.CommandText = @"INSERT INTO pets (name, type, food, attn, rest, guid) VALUES (@Name, @Type, @Food, @Attn, @Rest, @Guid);";
       foreach (PropertyInfo pInfo in typeof(Pet).GetProperties())
@@ -115,9 +120,29 @@ namespace Tamagotchi.Models
       if (conn != null) conn.Dispose();
     }
 
-    public static Pet Find(int searchId)
+    public static Pet Find(string searchGuid)
     {
-      return new Pet("Placeholder", "Cybernetic");
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      MySqlCommand cmd = conn.CreateCommand();
+      cmd.CommandText = @"SELECT * FROM pets WHERE guid = @thisGuid;";
+
+      MySqlParameter thisGuid = new();
+      thisGuid.ParameterName = "@thisGuid";
+      thisGuid.Value = searchGuid;
+      cmd.Parameters.Add(thisGuid);
+
+      MySqlDataReader rdr = cmd.ExecuteReader();
+      Pet found = new("", "");
+      while (rdr.Read()) found = Load(rdr);
+
+      // We close the connection.
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+      return found;
     }
 
     public static void WasteAway()
