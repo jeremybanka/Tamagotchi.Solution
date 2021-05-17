@@ -1,3 +1,4 @@
+using MySql.Data.MySqlClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using Tamagotchi.Models;
@@ -11,12 +12,30 @@ namespace Tamagotchi.Tests
     public void Dispose()
     {
       Pet.ClearAll();
+      GC.SuppressFinalize(this);
+    }
+    public PetTests()
+    {
+      DBConfiguration.ConnectionString = "server=localhost;user id=root;password=epicodus;port=3306;database=tamagotchi_test;";
+    }
+
+    [TestMethod]
+    public void GetAll_ReturnsEmptyListFromDatabase_ItemList()
+    {
+      //Arrange
+      List<Pet> newList = new();
+
+      //Act
+      List<Pet> result = Pet.GetAll();
+
+      //Assert
+      CollectionAssert.AreEqual(newList, result);
     }
 
     [TestMethod]
     public void PetCtor_CreatesInstanceOfPet_Pet()
     {
-      Pet myPet = new Pet("name", "type");
+      Pet myPet = new("name", "type");
       Assert.AreEqual(typeof(Pet), myPet.GetType());
     }
 
@@ -37,13 +56,13 @@ namespace Tamagotchi.Tests
     {
       Pet myDogPet = new("Buddy", "Dog");
       int foodStat = 99;
-      int attentionStat = 99;
+      int attnStat = 99;
       int restStat = 99;
 
       Pet.WasteAway();
 
       Assert.AreEqual(foodStat, myDogPet.Food);
-      Assert.AreEqual(attentionStat, myDogPet.Attention);
+      Assert.AreEqual(attnStat, myDogPet.Attn);
       Assert.AreEqual(restStat, myDogPet.Rest);
     }
 

@@ -1,61 +1,89 @@
+using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 
 namespace Tamagotchi.Models
 {
   public class Pet
   {
-    // public Dictionary<string, int> Stats = new()
-    // {
-    //   { "Food", 100 },
-    //   { "Attention", 100 },
-    //   { "Rest", 100 }
-    // };
     public string Name { get; set; }
     public string Type { get; set; }
     public int Food { get; set; }
-    public int Attention { get; set; }
+    public int Attn { get; set; }
     public int Rest { get; set; }
-
-    public int Id { get; }
-    private static List<Pet> _instances = new() { };
+    public string Id { get; }
     public Pet(string name, string type)
     {
       Name = name;
       Type = type;
       Food = 100;
-      Attention = 100;
+      Attn = 100;
       Rest = 100;
-
-      _instances.Add(this);
-      Id = _instances.Count;
+      Id = Guid.NewGuid().ToString();
     }
+
+    public Pet(string name, string type, int food, int attn, int rest, string petId)
+    {
+      Name = name;
+      Type = type;
+      Food = food;
+      Attn = attn;
+      Rest = rest;
+      Id = petId;
+    }
+
     public static List<Pet> GetAll() // DONT: myPet.GetAll() DO: Pet.GetAll()
     {
-      return _instances;
+      List<Pet> allPets = new();
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      MySqlCommand cmd = conn.CreateCommand();
+      cmd.CommandText = @"SELECT * FROM pets;";
+      MySqlDataReader rdr = cmd.ExecuteReader();
+      while (rdr.Read())
+      {
+        string id = rdr.GetString(0);
+        string name = rdr.GetString(1);
+        string type = rdr.GetString(2);
+        int food = rdr.GetInt32(3);
+        int attn = rdr.GetInt32(4);
+        int rest = rdr.GetInt32(5);
+        Pet myPet = new(name, type, food, attn, rest, id);
+        allPets.Add(myPet);
+      }
+      conn.Close();
+      if (conn != null) conn.Dispose();
+      return allPets;
     }
     public static void ClearAll()
     {
-      _instances.Clear();
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      MySqlCommand cmd = conn.CreateCommand();
+      cmd.CommandText = @"DELETE FROM pets;";
+      cmd.ExecuteNonQuery();
+      conn.Close();
+      if (conn != null) conn.Dispose();
     }
 
     public static Pet Find(int searchId)
     {
-      return _instances[searchId - 1];
+      return new Pet("Placeholder", "Cybernetic");
     }
 
     public static void WasteAway()
     {
-      foreach (Pet pet in _instances)
-      {
-        pet.Food--;
-        pet.Attention--;
-        pet.Rest--;
-      }
+      // foreach (Pet pet in _instances)
+      // {
+      //   pet.Food--;
+      //   pet.Attn--;
+      //   pet.Rest--;
+      // }
     }
 
-    public int IncrementStat(int aStat, int howMuch)
+    public int IncrementStat(int someStat, int howMuch)
     {
-      int newStat = aStat;
+      int newStat = someStat;
       if (newStat <= 100 - howMuch)
       {
         newStat += howMuch;
@@ -74,7 +102,7 @@ namespace Tamagotchi.Models
 
     public void PlayWith()
     {
-      Attention = IncrementStat(Attention, 10);
+      Attn = IncrementStat(Attn, 10);
     }
 
     public void TuckIn()
