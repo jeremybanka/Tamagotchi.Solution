@@ -52,6 +52,18 @@ namespace Tamagotchi.Tests
     }
 
     [TestMethod]
+    public void Equals_ReturnsBool_WhetherTwoPetsAreIdentical()
+    {
+      //Arrange
+      Pet p = new("Michael", "cat", 100, 100, 100, "06bb8f06-a487-498d-ac80-0c43d20482e7");
+      Pet q = new("Michael", "cat", 100, 100, 100, "06bb8f06-a487-498d-ac80-0c43d20482e7");
+
+      //Assert
+      Assert.AreEqual(p, q);
+    }
+
+
+    [TestMethod]
     public void WasteAway_ReducesAllStatsOf_AllPets()
     {
       Pet myDogPet = new("Buddy", "Dog");
@@ -86,6 +98,33 @@ namespace Tamagotchi.Tests
       myPet.Rest = myPet.IncrementStat(myPet.Rest, 10);
 
       Assert.AreEqual(100, myPet.Food);
+    }
+
+    [TestMethod]
+    public void Save_SavesToDatabase_PetList()
+    {
+      //Arrange
+      Pet p = new("Michael", "cat");
+
+      //Act
+      List<Pet> result = Pet.GetAll();
+      List<Pet> testList = new() { p };
+
+      //Assert
+      CollectionAssert.AreEqual(testList, result);
+    }
+
+    [TestMethod]
+    public void Find_ReturnsCorrectPetFromDatabase_Pet()
+    {
+      //Arrange
+      Pet cat1 = new("Fuji", "cat");
+      Pet cat2 = new("Tippy", "cat");
+
+      //Act
+      Pet found = Pet.Find(cat2.Guid);
+      //Assert
+      Assert.AreEqual(found, cat2);
     }
   }
 }

@@ -26,7 +26,7 @@ namespace Tamagotchi.Controllers
     public ActionResult Create(string name, string type)
     {
       Pet.WasteAway();
-      Pet myPet = new Pet(name, type);
+      new Pet(name, type);
       return RedirectToAction("Index");
     }
 
@@ -38,13 +38,13 @@ namespace Tamagotchi.Controllers
       return RedirectToAction("Index");
     }
 
-    [HttpGet("/pets/{id}")]
-    public ActionResult Show(int id)
+    [HttpGet("/pets/{guid}")]
+    public ActionResult Show(string guid)
     {
       Pet.WasteAway();
       try
       {
-        Pet foundPet = Pet.Find(id);
+        Pet foundPet = Pet.Find(guid);
         return View(foundPet);
       }
       catch (Exception)
@@ -53,27 +53,26 @@ namespace Tamagotchi.Controllers
       }
     }
 
-    [HttpPost("/pets/{id}/play-with")]
-    public ActionResult PlayWith(int id)
+    [HttpPost("/pets/{guid}/play-with")]
+    public ActionResult PlayWith(string guid)
     {
-      Pet foundPet = Pet.Find(id);
+      Pet foundPet = Pet.Find(guid);
       foundPet.PlayWith();
       return RedirectToAction("Index");
     }
 
-    [HttpPost("/pets/{id}/feed")]
-    public ActionResult Feed(int id)
+    [HttpPost("/pets/{guid}/feed")]
+    public ActionResult Feed(string guid)
     {
-      Pet foundPet = Pet.Find(id);
+      Pet foundPet = Pet.Find(guid);
       foundPet.Feed();
       return RedirectToAction("Index");
     }
 
-
-    [HttpPost("/pets/{id}/tuck-in")]
-    public ActionResult TuckIn(int id)
+    [HttpPost("/pets/{guid}/tuck-in")]
+    public ActionResult TuckIn(string guid)
     {
-      Pet foundPet = Pet.Find(id);
+      Pet foundPet = Pet.Find(guid);
       foundPet.TuckIn();
       return RedirectToAction("Index");
     }
